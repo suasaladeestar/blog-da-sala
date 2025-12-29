@@ -1,20 +1,15 @@
 FROM php:8.2-apache
 
-# Garante que apenas um MPM esteja ativo
-RUN a2dismod mpm_event || true \
- && a2dismod mpm_worker || true \
- && a2enmod mpm_prefork
-
-# Instala extensões necessárias para WordPress
+# Instala extensões do WordPress
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Habilita mod_rewrite
+# Habilita rewrite
 RUN a2enmod rewrite
 
-# Copia arquivos do WordPress
-COPY . /var/www/html/
+# Copia apenas o WordPress
+COPY wp-admin /var/www/html/wp-admin
+COPY wp-content /var/www/html/wp-content
+COPY wp-includes /var/www/html/wp-includes
+COPY *.php /var/www/html/
 
-# Permissões
 RUN chown -R www-data:www-data /var/www/html
-
-EXPOSE 80
